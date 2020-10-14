@@ -28,9 +28,9 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    override fun onNavigateUp(): Boolean {
+    override fun onSupportNavigateUp(): Boolean {
         finish()
-        return super.onNavigateUp()
+        return super.onSupportNavigateUp()
     }
 
     private fun loginUser(email: String, password: String) {

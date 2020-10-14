@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".fragments.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Fragment Search" />
-
+        tools:listitem="@layout/user_search_item" />
 </FrameLayout>

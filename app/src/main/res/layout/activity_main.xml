@@ -29,6 +29,7 @@
                 android:id="@+id/profile_image"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                android:backgroundTint="#FFFFFF"
                 android:src="@drawable/ic_profile"
                 android:tint="@android:color/white" />
 

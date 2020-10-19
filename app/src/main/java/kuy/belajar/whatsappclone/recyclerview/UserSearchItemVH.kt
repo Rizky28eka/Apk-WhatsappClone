@@ -11,10 +11,18 @@ import kuy.belajar.whatsappclone.model.User
 
 class UserSearchItemVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+//    private val binding = UserSearchItemBinding.bind(itemView)
+
     fun bindData(user: User) {
         with(itemView) {
             if (user.profile.isNotBlank()) Picasso.get().load(user.profile)
-                .placeholder(R.drawable.ic_profile).into(profile_image)
+                .placeholder(R.drawable.ic_profile)
+                .into(profile_image) else profile_image.setImageDrawable(
+                ContextCompat.getDrawable(
+                    itemView.context,
+                    R.drawable.ic_profile
+                )
+            )
             username.text = user.username
 
             val colorOffline = if (user.status == "online") ContextCompat.getDrawable(

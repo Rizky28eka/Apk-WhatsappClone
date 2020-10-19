@@ -10,4 +10,9 @@
     <string name="login">Login</string>
     <string name="welcome">Welcome</string>
     <string name="logout">Logout</string>
+    <string name="keyword">Keyword</string>
+    <string name="profile_background">Profile Background</string>
+    <string name="attach_image">Attach Image</string>
+    <string name="send_message">Send Message</string>
+    <string name="write_your_message">Write your message</string>
 </resources>

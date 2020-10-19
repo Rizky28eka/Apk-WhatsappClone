@@ -20,9 +20,10 @@ import kuy.belajar.whatsappclone.model.User
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var dbRef: DatabaseReference
+    private lateinit var userRef: DatabaseReference
     private lateinit var userId: String
     private lateinit var userCurrent: User
+    private lateinit var userListener: ValueEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,21 +38,58 @@ class MainActivity : AppCompatActivity() {
         view_pager.adapter = viewPagerAdapter
         tab_layout.setupWithViewPager(view_pager)
 
-        mAuth = FirebaseAuth.getInstance()
-        userId = mAuth.currentUser?.uid.toString()
-        dbRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
-        dbRef.addListenerForSingleValueEvent(
-            object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
+        userListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
                     userCurrent = snapshot.getValue(User::class.java) as User
                     user_name.text = userCurrent.username
                     if (userCurrent.profile.isNotBlank()) Picasso.get().load(userCurrent.profile)
-                        .centerCrop().placeholder(R.drawable.ic_profile).into(profile_image)
+                        .placeholder(R.drawable.ic_profile).into(profile_image)
+                } else {
+                    mAuth.signOut()
+                    val intentWelcome = Intent(this@MainActivity, WelcomeActivity::class.java)
+                    intentWelcome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intentWelcome)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        }
+
+        mAuth = FirebaseAuth.getInstance()
+        userId = mAuth.currentUser?.uid.toString()
+        userRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+        userRef.addValueEventListener(userListener)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        userRef.addListenerForSingleValueEvent(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val usr = snapshot.getValue(User::class.java) as User
+                    val userUpdate = usr.copy(status = "online")
+                    userRef.setValue(userUpdate)
                 }
 
-                override fun onCancelled(error: DatabaseError) {
+                override fun onCancelled(error: DatabaseError) {}
+            }
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        userRef.addListenerForSingleValueEvent(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val usr = snapshot.getValue(User::class.java) as User
+                    val userUpdate = usr.copy(status = "offline")
+                    userRef.setValue(userUpdate)
                 }
 
+                override fun onCancelled(error: DatabaseError) {}
             }
         )
     }
@@ -59,6 +97,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        userRef.removeEventListener(userListener)
     }
 
     private fun toast(message: String) {

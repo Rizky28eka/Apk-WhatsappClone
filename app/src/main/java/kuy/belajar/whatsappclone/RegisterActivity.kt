@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_register.*
 import kuy.belajar.whatsappclone.model.User
+import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -47,7 +48,10 @@ class RegisterActivity : AppCompatActivity() {
                     userId = mAuth.currentUser?.uid.toString()
                     dbRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
 
-                    val newUser = User(uid = userId, username = username)
+                    val newUser = User(
+                        uid = userId, username = username,
+                        search = username.toLowerCase(Locale.ROOT), status = "online"
+                    )
                     dbRef.setValue(newUser).addOnCompleteListener {
                         if (it.isSuccessful) {
                             val intentMain = Intent(this, MainActivity::class.java)
